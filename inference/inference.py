@@ -106,7 +106,7 @@ def run_inference(model, df, h5_path, device='cpu', batch_size=32, max_len=1022,
         valid_logits = all_logits[all_mask.bool()]
         valid_labels = all_labels[all_mask.bool()]
 
-        probs_flat = torch.sigmoid(valid_logits).numpy()
+        probs_flat = torch.sigmoid(valid_logits).detach().numpy()
         pred_flat = (probs_flat >= threshold).astype(int)
         true_flat = valid_labels.numpy()
 
