@@ -38,7 +38,7 @@ def execute_training_pipeline_hpc(
     )
 
     # 2. Load best model checkpoint
-    model.load_state_dict(torch.load(save_path))
+    model.load_state_dict(torch.load(save_path, map_location=device))
     model.to(device)
 
     # 3. Find optimal threshold on validation set
