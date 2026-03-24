@@ -96,7 +96,7 @@ model:
 ## Training
 Run the full HPC-ready training pipeline:
 ```
-python src/main.py --config config/config.yaml
+export PYTHONPATH=$(pwd) python -m src.main --config full/path/to/config/config.yaml
 ```
 The training pipeline includes:
 
@@ -147,9 +147,11 @@ Seeds are applied in both `main.py` (training) and `inference_main.py` (inferenc
 - `prediction_metrics.json` – Evaluation metrics if available
 
 ## Example Usage
+Use the files in `examples/` to test it out!
+
 1. Train on example dataset:
 ```
-python src/main.py --config config/config.yaml
+export PYTHONPATH=$(pwd) python -m src.main --config full/path/to/config/config.yaml
 ```
   Download example per-residue [ProtT5 embeddings](https://drive.google.com/file/d/1t5mn4YDiVk_aVm_2GkjAN8G9AzBy7Mix/view?usp=drive_link)
 
