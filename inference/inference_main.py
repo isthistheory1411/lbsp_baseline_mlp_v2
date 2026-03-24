@@ -54,7 +54,7 @@ if __name__ == "__main__":
         dropout=cfg.model.dropout
     )
     checkpoint_path = os.path.expanduser(cfg.paths.checkpoint)
-    model.load_state_dict(torch.load(save_path, map_location=device))
+    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
     model.to(device)
     model.eval()
 
