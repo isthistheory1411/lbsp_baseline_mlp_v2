@@ -10,8 +10,7 @@ from src.dataset import get_protein_dataloader
 from src.model import ResidueMLP
 from src.train import train_model_hpc
 from src.evaluate import evaluate_on_test_hpc, find_optimal_threshold
-from src.main import save_results
-from src.utils import set_seed  # <--- new
+from src.utils import set_seed, save_results
 
 def execute_training_pipeline_hpc(
     model,
