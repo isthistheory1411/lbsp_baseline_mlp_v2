@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from loss import masked_bce_loss
+from src.loss import masked_bce_loss
 
 class ResidueMLP(nn.Module):
     """
