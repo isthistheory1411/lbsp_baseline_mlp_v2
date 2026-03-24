@@ -1,0 +1,33 @@
+# -------------------------------
+# Data
+# -------------------------------
+data:
+  test_df: "~/model_dev/example_test_df.pkl"       # DataFrame with protein keys (and optional labels)
+  h5_embeddings: "~/generate_embed/per_residue_embeddings.h5"  # per-residue embeddings HDF5
+
+# -------------------------------
+# Model
+# -------------------------------
+model:
+  residue_emb_dim: 1024
+  protein_emb_dim: 256
+  hidden_dims: [512, 256, 128]
+  dropout: 0.1
+  max_len: 1022  # max residues to process per protein
+
+
+# -------------------------------
+# Paths
+# -------------------------------
+paths:
+  checkpoint: "~/model_dev/baseline_mlp/best_model.pt"  # path to downloaded pretrained model
+  inference_csv: "~/model_dev/baseline_mlp/predictions.csv"
+
+# -------------------------------
+# Inference options
+# -------------------------------
+inference:
+  batch_size: 64        # DataLoader batch size
+  threshold: 0.5        # probability threshold for binary classification
+  device: "cuda"        # "cuda" or "cpu"
+  seed: 42   # for reproducibility during inference
