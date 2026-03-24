@@ -2,10 +2,10 @@
 # Data settings
 # -------------------------------
 data:
-  train_df: "~/model_dev/ligysis_id30_train_df.pkl"   # path to training DataFrame
-  val_df: "~/model_dev/ligysis_id30_val_df.pkl"       # path to validation DataFrame
-  test_df: "~/model_dev/ligysis_id30_test_df.pkl"     # path to test DataFrame
-  h5_embeddings: "~/generate_embed/per_residue_embeddings.h5"  # per-residue embeddings HDF5
+  train_df: "/examples/mlp_v2_example_test.pkl"   # path to training DataFrame
+  val_df: "/examples/mlp_v2_example_val.pkl"       # path to validation DataFrame
+  test_df: "/examples/mlp_v2_example_test.pkl"     # path to test DataFrame
+  h5_embeddings: "path/to/mlp_v2_example.h5"  # per-residue embeddings HDF5
 
 # -------------------------------
 # Model settings
@@ -34,8 +34,8 @@ training:
 # Paths
 # -------------------------------
 paths:
-  checkpoint: "~/model_dev/baseline_mlp/best_model.pt"      # path to save best model checkpoint
-  results: "~/model_dev/baseline_mlp/training_results.joblib" # path to save training results
+  checkpoint: "best_model.pt"      # path to save best model checkpoint
+  results: "/path/to/training_results.joblib" # path to save training results
 
 # -------------------------------
 # Optional: thresholds (for evaluation)
