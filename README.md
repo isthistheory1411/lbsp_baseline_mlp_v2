@@ -102,7 +102,7 @@ Run per-residue predictions with optional metrics if labels are available. Using
 ```
 python inference/inference_main.py --config config/inference_config.yaml
 
-New: python -m inference.inference_main --config full/path/to/config/inference_config.yaml
+New: export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
 Outputs:
 
