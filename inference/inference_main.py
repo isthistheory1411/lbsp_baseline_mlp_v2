@@ -36,7 +36,13 @@ if __name__ == "__main__":
     # -------------------------------
     # Device
     # -------------------------------
-    device = torch.device(cfg.inference.device if torch.cuda.is_available() else "cpu")
+    requested_device = cfg.inference.device
+    
+    if requested_device == "cuda" and not torch.cuda.is_available():
+        print("[WARNING] CUDA requested but not available. Falling back to CPU.")
+        device = torch.device("cpu")
+    else:
+        device = torch.device(requested_device)
 
     # -------------------------------
     # Load model
