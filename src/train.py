@@ -1,26 +1,29 @@
 import torch
 from sklearn.metrics import roc_auc_score, average_precision_score, matthews_corrcoef
+from loss import masked_bce_loss
+from typing import Tuple, List
 
-def train_model_hpc(model, train_loader, val_loader, optimizer,
-                    pos_weight, device, num_epochs=50,
-                    patience=5, save_path="best_model.pt",
-                    use_amp=False):
+
+def train_model_hpc(
+    model: torch.nn.Module,
+    train_loader: torch.utils.data.DataLoader,
+    val_loader: torch.utils.data.DataLoader,
+    optimizer: torch.optim.Optimizer,
+    pos_weight: torch.Tensor,
+    device: str,
+    num_epochs: int = 50,
+    patience: int = 5,
+    save_path: str = "best_model.pt",
+    use_amp: bool = False,
+    verbose: bool = True
+) -> Tuple[List[float], List[float], str]:
     """
     HPC-ready training loop for ResidueMLP.
     
-    Args:
-        model: ResidueMLP instance
-        train_loader, val_loader: PyTorch DataLoaders
-        optimizer: torch optimizer
-        pos_weight: scalar tensor for BCEWithLogitsLoss
-        device: 'cuda' or 'cpu'
-        num_epochs: maximum epochs to train
-        patience: early stopping patience
-        save_path: where to save the best model
-        use_amp: use mixed precision (torch.cuda.amp) if True
     Returns:
-        train_loss_history, val_loss_history
+        train_loss_history, val_loss_history, best_model_path
     """
+    model.to(device)
     best_val_loss = float('inf')
     counter = 0
 
@@ -63,7 +66,8 @@ def train_model_hpc(model, train_loader, val_loader, optimizer,
 
         train_loss = train_loss_accum / total_masked
         train_loss_history.append(train_loss)
-        print(f"Epoch {epoch} | Train Loss: {train_loss:.4f}")
+        if verbose:
+            print(f"Epoch {epoch} | Train Loss: {train_loss:.4f}")
 
         # --------------------
         # Validation step
@@ -87,7 +91,6 @@ def train_model_hpc(model, train_loader, val_loader, optimizer,
                 val_loss_accum += loss.item() * mask.sum().item()
                 total_masked_val += mask.sum().item()
 
-                # Collect for metrics
                 all_logits.append(logits.cpu())
                 all_labels.append(labels.cpu())
                 all_mask.append(mask.cpu())
@@ -95,9 +98,7 @@ def train_model_hpc(model, train_loader, val_loader, optimizer,
         val_loss = val_loss_accum / total_masked_val
         val_loss_history.append(val_loss)
 
-        # --------------------
         # Flatten valid residues for metrics
-        # --------------------
         all_logits = torch.cat(all_logits, dim=0)
         all_labels = torch.cat(all_labels, dim=0)
         all_mask = torch.cat(all_mask, dim=0)
@@ -109,13 +110,12 @@ def train_model_hpc(model, train_loader, val_loader, optimizer,
         true = valid_labels.numpy()
         pred = (probs >= 0.5).astype(int)
 
-        # Metrics
-        auc = roc_auc_score(true, probs)
-        auprc = average_precision_score(true, probs)
-        mcc = matthews_corrcoef(true, pred)
-
-        print(f"Validation | Loss: {val_loss:.4f} | ROC-AUC: {auc:.4f} | "
-              f"AU-PRC: {auprc:.4f} | MCC: {mcc:.4f}")
+        if verbose:
+            auc = roc_auc_score(true, probs)
+            auprc = average_precision_score(true, probs)
+            mcc = matthews_corrcoef(true, pred)
+            print(f"Validation | Loss: {val_loss:.4f} | ROC-AUC: {auc:.4f} | "
+                  f"AU-PRC: {auprc:.4f} | MCC: {mcc:.4f}")
 
         # --------------------
         # Early stopping
@@ -124,12 +124,15 @@ def train_model_hpc(model, train_loader, val_loader, optimizer,
             best_val_loss = val_loss
             counter = 0
             torch.save(model.state_dict(), save_path)
-            print(f"Validation loss improved. Model saved to {save_path}")
+            if verbose:
+                print(f"Validation loss improved. Model saved to {save_path}")
         else:
             counter += 1
-            print(f"No improvement. Patience counter: {counter}/{patience}")
+            if verbose:
+                print(f"No improvement. Patience counter: {counter}/{patience}")
             if counter >= patience:
-                print(f"Early stopping triggered at epoch {epoch}")
+                if verbose:
+                    print(f"Early stopping triggered at epoch {epoch}")
                 break
 
-    return train_loss_history, val_loss_history
+    return train_loss_history, val_loss_history, save_path
