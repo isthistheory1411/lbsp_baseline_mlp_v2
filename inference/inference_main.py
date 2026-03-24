@@ -6,7 +6,7 @@ import json
 from omegaconf import OmegaConf
 from src.model import ResidueMLP
 from src.utils import set_seed  
-from inference import run_inference  
+from inference.inference import run_inference  
 
 if __name__ == "__main__":
     # -------------------------------
