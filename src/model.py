@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from loss import masked_bce_loss
 
 class ResidueMLP(nn.Module):
     def __init__(self, residue_emb_dim, protein_emb_dim=256, hidden_dims=[512, 256, 128], dropout=0.1):
