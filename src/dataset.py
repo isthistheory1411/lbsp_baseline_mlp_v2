@@ -40,7 +40,7 @@ class ProteinDataset(Dataset):
             "position": torch.tensor(pos, dtype=torch.float32)
         }
 
-# Collate function
+
 def collate_fn(batch):
     """
     batch: list of dicts from ProteinDataset
