@@ -2,8 +2,8 @@
 # Data
 # -------------------------------
 data:
-  test_df: "~/model_dev/example_test_df.pkl"       # DataFrame with protein keys (and optional labels)
-  h5_embeddings: "~/generate_embed/per_residue_embeddings.h5"  # per-residue embeddings HDF5
+  test_df: "/examples/mlp_v2_example_test.pkl"       # DataFrame with protein keys (and optional labels)
+  h5_embeddings: "/path/to/mlp_v2_example.h5"  # per-residue embeddings HDF5
 
 # -------------------------------
 # Model
@@ -20,8 +20,8 @@ model:
 # Paths
 # -------------------------------
 paths:
-  checkpoint: "~/model_dev/baseline_mlp/best_model.pt"  # path to downloaded pretrained model
-  inference_csv: "~/model_dev/baseline_mlp/predictions.csv"
+  checkpoint: "best_model.pt"  # path to downloaded pretrained model
+  inference_csv: "/path/to/inference_results.csv"  # path to save inference results CSV
 
 # -------------------------------
 # Inference options
