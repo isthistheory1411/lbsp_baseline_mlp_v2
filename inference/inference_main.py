@@ -14,8 +14,6 @@ if __name__ == "__main__":
     # -------------------------------
     parser = argparse.ArgumentParser(description="Run per-residue inference")
     parser.add_argument("--config", type=str, required=True, help="Path to inference_config.yaml")
-    parser.add_argument("--override", nargs="*", default=None,
-                        help="Optional overrides, e.g. inference.threshold=0.6")
     args = parser.parse_args()
 
     # -------------------------------
