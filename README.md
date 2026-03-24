@@ -50,8 +50,8 @@ MLP_V2/
 ## Installation 
 1. Clone the repository:
 ```
-git clone https://github.com/yourusername/MLP_V2.git
-cd MLP_V2
+git clone https://github.com/yourusername/lbsp_baseline_mlp_v2.git
+cd lbsp_baseline_mlp_v2
 ```
 
 2. Create a virtual environment:
@@ -81,10 +81,7 @@ model:
   dropout: 0.1
   max_len: 1022
 ```
-You can override values from the CLI:
-```
-python src/main.py --config config/config.yaml
-```
+
 ## Training
 Run the full HPC-ready training pipeline:
 ```
@@ -98,20 +95,24 @@ The training pipeline includes:
 - Storing training / validation loss histories
 
 ## Inference
-Run per-residue predictions with optional metrics if labels are available. Using the full YAML path is recommended:
-```
-python inference/inference_main.py --config config/inference_config.yaml
+Before running Inference mode, update `config/inference_config.yaml`:
+- `path.checkpoint` -> path to trained model
+- `data.test_df` -> path to test dataframe
+- `data.h5_embeddings` -> path to HDF5 embeddings
+- `path.inference.csv` -> output location
 
-New: export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
+Run per-residue predictions with optional metrics if labels are available. The full YAML path is recommended:
 ```
+export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
+```
+
 Outputs:
-
-- CSV file (predictions.csv) containing:
+- CSV file (i.e. `inference_results.csv`) containing:
   - `protein_key`
   - `residue_index`
   - `probability`
   - `prediction` (binary)
-- **JSON metrics file** (if labels present) containing: ROC-AUC, AU-PRC, MCC, Precision, Recall
+- **JSON metrics file** (if labels provided) containing: ROC-AUC, AU-PRC, MCC, Precision, Recall
 
 You can override the threshold at runtime:
 ```
@@ -139,13 +140,7 @@ python src/main.py --config config/config.yaml
 ```
   Download example per-residue [ProtT5 embeddings](https://drive.google.com/file/d/1t5mn4YDiVk_aVm_2GkjAN8G9AzBy7Mix/view?usp=drive_link)
 
-2. Run Inference on test data:
+2. Run Inference on example data:
 ```
-python inference/inference_main.py --config config/inference_config.yaml
-```
-
-3. Optional Overrides:
-```
-python src/main.py --config config/config.yaml --override training.num_epochs=100
-python inferenece/inference_main.py --config config/inference_config.yaml --override inference.threshold=0.6
+export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
