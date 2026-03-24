@@ -135,7 +135,7 @@ Seeds are applied in both `main.py` (training) and `inference_main.py` (inferenc
 ```
 python src/main.py --config config/config.yaml
 ```
-  Example embeddings can be downloaded via [Google Drive]("https://drive.google.com/file/d/1t5mn4YDiVk_aVm_2GkjAN8G9AzBy7Mix/view?usp=drive_link")
+  Download example per-residue [ProtT5 embeddings](https://drive.google.com/file/d/1t5mn4YDiVk_aVm_2GkjAN8G9AzBy7Mix/view?usp=drive_link)
 
 2. Run Inference on test data:
 ```
