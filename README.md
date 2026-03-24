@@ -2,8 +2,8 @@
 This repository contains the MLP_V2 model for predicting ligand binding residues on proteins from per-residue embeddings. The model is HPC-ready, supports training with early stopping, per-residue inference, and configurable evaluation metrics.
 
 ## Table of Contents
-1. Overview
-2. Directory Structure
+1. [Overview](#Overview)
+2. [Directory Structure](#DirectoryStructure)
 3. Installation
 4. Configuration
 5. Training
@@ -21,7 +21,7 @@ The MLP_V2 model predicts the likelihood of each residue in a protein being part
 4. Per-residue inference with CSV output
 5. Optional evaluation metrics if binding labels are available
 
-## Directory Structure (Update this)
+## Directory Structure
 ```
 MLP_V2/
 │
