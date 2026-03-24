@@ -133,7 +133,7 @@ Seeds are applied in both `main.py` (training) and `inference_main.py` (inferenc
 - `best_model.pt` – Saved model checkpoint
 - `training_results.joblib` – Training/validation losses, threshold metrics
 - `predictions.csv` – Per-residue predictions
-- `predictions_metrics.json` – Evaluation metrics if available
+- `prediction_metrics.json` – Evaluation metrics if available
 
 ## Example Usage
 1. Train on example dataset:
