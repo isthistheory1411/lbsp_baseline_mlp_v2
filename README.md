@@ -13,7 +13,7 @@ This repository contains the MLP (v.2) model for predicting ligand binding resid
 9. [Example Usage](#example-usage)
 
 ## Overview
-The MLP_V2 model predicts the likelihood of each residue in a protein being part of a ligand binding site. It uses pre-computed per-residue embeddings stored in HDF5 files and supports:
+The MLP (v.2) model predicts the likelihood of each residue in a protein being part of a ligand binding site. It uses pre-computed per-residue embeddings stored in HDF5 files and supports:
 
 1. HPC-ready training with mixed precision (`torch.cuda.amp`)
 2. Early stopping and class imbalance weighting
@@ -23,12 +23,13 @@ The MLP_V2 model predicts the likelihood of each residue in a protein being part
 
 ## Directory Structure
 ```
-MLP_V2/
+lbsp_baseline_mlp_v2/
 │
 ├─ src/
 │   ├─ dataset.py        # Dataset and DataLoader helpers
 │   ├─ model.py          # ResidueMLP model definition
 │   ├─ train.py          # Training loop
+│   ├─ loss.py           # Loss function
 │   ├─ evaluate.py       # Evaluation functions
 │   ├─ utils.py          # Utility functions (e.g., set_seed)
 │   └─ main.py           # Training entry point
@@ -41,8 +42,18 @@ MLP_V2/
 │   ├─ config.yaml             # Training configuration
 │   └─ inference_config.yaml   # Inference configuration
 │
-├─ generate_embed/             # Example per-residue embeddings HDF5
-├─ model_dev/                  # Example DataFrames and checkpoints
+├─ figures/
+│   ├─ loss_curve.png           # Loss-curves during training 
+│   └─ performance_metrics.png  # Evaluation metrics on test dataset 
+│
+├─ examples/
+│   ├─ mlp_v2_example_train.pkl    # Example training dataframe (70 samples)
+│   ├─ mlp_v2_example_val.pkl      # Example validation dataframe (15 samples)
+│   └─ mlp_v2_example_test.pkl     # Example testing dataframe (15 samples)
+│
+├─ best_model.pt                 # saved training weights of ResidueMLP
+├─ train_requirements.txt        # installation requirements for training (on GPU/HPC)
+├─ inference_requirements.txt    # installation requirements for inference (on CPU)
 ├─ README.md
 └─ LICENSE
 ```
