@@ -98,11 +98,11 @@ The training pipeline includes:
 - Storing training / validation loss histories
 
 ## Inference
-Run per-residue predictions with optional metrics if labels are available:
+Run per-residue predictions with optional metrics if labels are available. Using the full YAML path is recommended:
 ```
 python inference/inference_main.py --config config/inference_config.yaml
 
-New: python -m inference.inference_main --config conig/inference_config.yaml
+New: python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
 Outputs:
 
