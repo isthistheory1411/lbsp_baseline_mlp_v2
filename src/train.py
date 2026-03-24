@@ -1,6 +1,6 @@
 import torch
 from sklearn.metrics import roc_auc_score, average_precision_score, matthews_corrcoef
-from loss import masked_bce_loss
+from src.loss import masked_bce_loss
 from typing import Tuple, List
 
 
