@@ -322,12 +322,12 @@ if __name__ == "__main__":
     import joblib
 
     # -------------------------------
-    # Paths and data
+    # Paths and data (adjust to filepath)
     # -------------------------------
-    h5_path = os.path.expanduser("~/generate_embed/per_residue_embeddings.h5")
-    train_pkl = os.path.expanduser("~/model_dev/ligysis_id30_train_df.pkl")
-    val_pkl = os.path.expanduser("~/model_dev/ligysis_id30_val_df.pkl")
-    test_pkl = os.path.expanduser("~/model_dev/ligysis_id30_test_df.pkl")
+    h5_path = os.path.expanduser("path/to/file/per_residue_embeddings.h5")
+    train_pkl = os.path.expanduser("path/to/file/ligysis_id30_train_df.pkl")
+    val_pkl = os.path.expanduser("path/to/file/ligysis_id30_val_df.pkl")
+    test_pkl = os.path.expanduser("path/to/file/ligysis_id30_test_df.pkl")
 
     # -------------------------------
     # Load DataFrames
@@ -400,10 +400,10 @@ if __name__ == "__main__":
     pos_weight = torch.tensor([(1 - pos_frac) / pos_frac]).to(device)
 
     # -------------------------------
-    # Train, find optimal threshold, evaluate
+    # Train, find optimal threshold, evaluate (Adjust path to desired location)
     # -------------------------------
 
-    checkpoint_dir = os.path.dirname(os.path.expanduser("~/model_dev/baseline_mlp/best_model.pt"))
+    checkpoint_dir = os.path.dirname(os.path.expanduser("path/to/file/best_model.pt"))
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     test_metrics, optimal_threshold, train_loss_history, val_loss_history, threshold_results = execute_training_pipeline_hpc(
@@ -411,7 +411,7 @@ if __name__ == "__main__":
         optimizer, pos_weight, device,
         num_epochs=50,
         patience=5,
-        save_path=os.path.expanduser("~/model_dev/baseline_mlp/best_model.pt")
+        save_path=os.path.expanduser("path/to/file/best_model.pt") # adjust path
     )
 
     # -------------------------------
