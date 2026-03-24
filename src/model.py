@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from typing import List
 
 
 class ResidueMLP(nn.Module):
@@ -17,7 +18,7 @@ class ResidueMLP(nn.Module):
         self,
         residue_emb_dim: int,
         protein_emb_dim: int = 256,
-        hidden_dims: list[int] = [512, 256, 128],
+        hidden_dims: List[int] = [512, 256, 128],
         dropout: float = 0.1
     ):
         super().__init__()
