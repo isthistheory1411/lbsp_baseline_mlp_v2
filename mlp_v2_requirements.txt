@@ -1,0 +1,12 @@
+# PyTorch with CUDA 11.8
+torch==2.1.0+cu118
+# HDF5 support
+h5py==3.9.0
+# Numerical computing
+numpy==1.24.4
+# Data handling
+pandas==2.1.0
+# Metrics and evaluation
+scikit-learn==1.3.0
+# Saving/loading results
+joblib==1.3.2
