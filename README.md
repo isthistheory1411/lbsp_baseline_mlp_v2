@@ -101,6 +101,8 @@ The training pipeline includes:
 Run per-residue predictions with optional metrics if labels are available:
 ```
 python inference/inference_main.py --config config/inference_config.yaml
+
+New: python -m inference.inference_main --config conig/inference_config.yaml
 ```
 Outputs:
 
