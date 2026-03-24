@@ -33,7 +33,9 @@ class ProteinDataset(Dataset):
 
         # Load embeddings from HDF5
         with h5py.File(self.h5_path, 'r') as h5f:
-            emb = h5f[protein_key][:]  # shape [L_i, D]
+            if protein_key not in h5f:
+                raise KeyError(f"Protein key '{protein_key}' not found in HDF5 file")
+            emb = h5f[protein_key][:] # shape [L_i, D]
 
         L_i, D = emb.shape
 
@@ -42,7 +44,7 @@ class ProteinDataset(Dataset):
             pad_len = self.max_len - L_i
             emb = np.vstack([emb, np.zeros((pad_len, D), dtype=np.float32)])
             if not self.inference:
-                labels = np.hstack([labels, np.zeros(pad_len, dtype=np.float32)])
+                labels = np.hstack([labels.astype(np.float32), np.zeros(pad_len, dtype=np.float32)])
         else:
             emb = emb[:self.max_len]
             if not self.inference:
@@ -51,7 +53,7 @@ class ProteinDataset(Dataset):
         # Create mask and position encodings
         mask = np.zeros(self.max_len, dtype=np.float32)
         mask[:min(L_i, self.max_len)] = 1.0
-        pos = np.arange(self.max_len) / self.max_len
+        pos = (np.arange(self.max_len) / self.max_len).astype(np.float32)
 
         sample = {
             "embeddings": torch.tensor(emb, dtype=torch.float32),
