@@ -83,13 +83,12 @@ model:
 ```
 You can override values from the CLI:
 ```
-python main.py --config configs/config.yaml --override training.num_epochs=100
+python src/main.py --config config/config.yaml
 ```
-
 ## Training
 Run the full HPC-ready training pipeline:
 ```
-python main.py --config configs/config.yaml
+python inference/inference_main.py --config config/inference_config.yaml
 ```
 The training pipeline includes:
 
