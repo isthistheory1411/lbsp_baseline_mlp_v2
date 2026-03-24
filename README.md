@@ -1,5 +1,5 @@
 # MLP (v.2) LBSP
-This repository contains the MLP_V2 model for predicting ligand binding residues on proteins from per-residue embeddings. The model is HPC-ready, supports training with early stopping, per-residue inference, and configurable evaluation metrics.
+This repository contains the MLP (v.2) model for predicting ligand binding residues on proteins from per-residue embeddings. The model is HPC-ready, supports training with early stopping, per-residue inference, and configurable evaluation metrics. 
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -64,7 +64,7 @@ venv\Scripts\activate     # Windows
 
 3. Then install dependencies:
 ```
-pip install -r mlp_v2_requirements.txt
+pip install -r {mode}_requirements.txt      # ex. inference_requirements.txt
 ```
 
 ## Configuration
@@ -94,6 +94,10 @@ The training pipeline includes:
 - Saving the best model checkpoint
 - Storing training / validation loss histories
 
+Tested on HPC with:
+- Python 3.8.5
+- GPU-only environment
+
 ## Inference
 Before running Inference mode, update `config/inference_config.yaml`:
 - `path.checkpoint` -> path to trained model
@@ -105,6 +109,9 @@ Run per-residue predictions with optional metrics if labels are available. The f
 ```
 export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
+Tested with:
+- Python 3.12.11
+- CPU-only environment
 
 Outputs:
 - CSV file (i.e. `inference_results.csv`) containing:
@@ -113,11 +120,6 @@ Outputs:
   - `probability`
   - `prediction` (binary)
 - **JSON metrics file** (if labels provided) containing: ROC-AUC, AU-PRC, MCC, Precision, Recall
-
-You can override the threshold at runtime:
-```
-python inference_main.py --config config/inference_config.yaml --override inference.threshold=0.6
-```
 
 ## Reproducibility
 Random seeds are set using `src/utils.py`:
