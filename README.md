@@ -69,8 +69,8 @@ pip install -r mlp_v2_requirements.txt
 
 ## Configuration
 Training and Inference are fully configurable using YAML files:
-- `config.yaml` – Training dataset paths, model hyperparameters, optimizer settings, and checkpoint locations.
-- `inference_config.yaml` – Test dataset, checkpoint, threshold, batch size, and device for inference.
+- `config/config.yaml` – Training dataset paths, model hyperparameters, optimizer settings, and checkpoint locations.
+- `config/inference_config.yaml` – Test dataset, checkpoint, threshold, batch size, and device for inference.
 
 Example:
 ```
@@ -88,7 +88,7 @@ python src/main.py --config config/config.yaml
 ## Training
 Run the full HPC-ready training pipeline:
 ```
-python inference/inference_main.py --config config/inference_config.yaml
+python src/main.py --config config/config.yaml
 ```
 The training pipeline includes:
 
@@ -100,7 +100,7 @@ The training pipeline includes:
 ## Inference
 Run per-residue predictions with optional metrics if labels are available:
 ```
-python inference_main.py --config configs/inference_config.yaml
+python inference/inference_main.py --config config/inference_config.yaml
 ```
 Outputs:
 
@@ -113,7 +113,7 @@ Outputs:
 
 You can override the threshold at runtime:
 ```
-python inference_main.py --config configs/inference_config.yaml --override inference.threshold=0.6
+python inference_main.py --config config/inference_config.yaml --override inference.threshold=0.6
 ```
 
 ## Reproducibility
@@ -133,16 +133,16 @@ Seeds are applied in both `main.py` (training) and `inference_main.py` (inferenc
 ## Example Usage
 1. Train on example dataset:
 ```
-python main.py --config configs/config.yaml
+python src/main.py --config config/config.yaml
 ```
 
 2. Run Inference on test data:
 ```
-python inference_main.py --config configs/inference_config.yaml
+python inference/inference_main.py --config config/inference_config.yaml
 ```
 
 3. Optional Overrides:
 ```
-python main.py --config configs/config.yaml --override training.num_epochs=100
-python inference_main.py --config configs/inference_config.yaml --override inference.threshold=0.6
+python src/main.py --config config/config.yaml --override training.num_epochs=100
+python inferenece/inference_main.py --config config/inference_config.yaml --override inference.threshold=0.6
 ```
