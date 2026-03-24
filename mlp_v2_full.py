@@ -425,7 +425,7 @@ if __name__ == "__main__":
         "threshold_results": threshold_results
     }
 
-    results_dir = os.path.expanduser("~/model_dev/baseline_mlp")  # e.g., your HPC scratch space
+    results_dir = os.path.expanduser("path/to/file/")  # e.g., your HPC scratch space
     os.makedirs(results_dir, exist_ok=True)  # ensure the folder exists
     save_path = os.path.join(results_dir, "training_results.joblib")
 
