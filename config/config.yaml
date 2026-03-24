@@ -1,0 +1,44 @@
+# -------------------------------
+# Data settings
+# -------------------------------
+data:
+  train_df: "~/model_dev/ligysis_id30_train_df.pkl"   # path to training DataFrame
+  val_df: "~/model_dev/ligysis_id30_val_df.pkl"       # path to validation DataFrame
+  test_df: "~/model_dev/ligysis_id30_test_df.pkl"     # path to test DataFrame
+  h5_embeddings: "~/generate_embed/per_residue_embeddings.h5"  # per-residue embeddings HDF5
+
+# -------------------------------
+# Model settings
+# -------------------------------
+model:
+  residue_emb_dim: 1024          # D_res, dimension of per-residue embeddings
+  protein_emb_dim: 256           # projected per-protein embedding dimension
+  hidden_dims: [512, 256, 128]  # hidden layer sizes for MLP
+  dropout: 0.1                   # dropout probability
+  max_len: 1022                  # max sequence length per protein
+
+# -------------------------------
+# Training settings
+# -------------------------------
+training:
+  batch_size: 64                 # batch size for DataLoader
+  num_workers: 0                 # number of DataLoader workers (adjust for HPC)
+  learning_rate: 0.001           # Adam learning rate
+  weight_decay: 1e-5             # Adam weight decay
+  num_epochs: 50                 # maximum number of epochs
+  patience: 5                    # early stopping patience
+  pos_weight: 9.0                # class imbalance weighting (for 1:10 positive fraction)
+  seed: 42                       # random seed for reproducibility 
+
+# -------------------------------
+# Paths
+# -------------------------------
+paths:
+  checkpoint: "~/model_dev/baseline_mlp/best_model.pt"      # path to save best model checkpoint
+  results: "~/model_dev/baseline_mlp/training_results.joblib" # path to save training results
+
+# -------------------------------
+# Optional: thresholds (for evaluation)
+# -------------------------------
+evaluation:
+  thresholds: [0.5, 0.6, 0.7, 0.8, 0.9]  # thresholds to sweep for MCC optimization
