@@ -34,7 +34,7 @@ class ProteinDataset(Dataset):
         # Load embeddings from HDF5
         with h5py.File(self.h5_path, 'r') as h5f:
             if protein_key not in h5f:
-                raise KeyError(f"Protein key '{protein_key}' not found in HDF5 file")
+                raise KeyError(f"Protein key '{protein_key}' not found in {self.h5_path} file")
             emb = h5f[protein_key][:] # shape [L_i, D]
 
         L_i, D = emb.shape
@@ -110,4 +110,5 @@ def get_protein_dataloader(df, h5_path, batch_size=32, shuffle=True, max_len=102
         DataLoader: PyTorch DataLoader ready for training or inference.
     """
     dataset = ProteinDataset(df, h5_path, max_len=max_len, inference=inference)
+    
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
