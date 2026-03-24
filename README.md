@@ -37,7 +37,7 @@ MLP_V2/
 │   ├─ inference.py      # Inference helper function
 │   └─ inference_main.py # CLI entry point for inference
 │
-├─ configs/
+├─ config/
 │   ├─ config.yaml             # Training configuration
 │   └─ inference_config.yaml   # Inference configuration
 │
