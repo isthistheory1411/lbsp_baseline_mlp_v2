@@ -62,8 +62,6 @@ if __name__ == "__main__":
     # -------------------------------
     parser = argparse.ArgumentParser(description="Ligand Binding Site Prediction Pipeline")
     parser.add_argument("--config", type=str, required=True, help="Path to config.yaml")
-    parser.add_argument("--override", nargs="*", default=None,
-                        help="Optional overrides, e.g. training.num_epochs=100")
     args = parser.parse_args()
 
     # -------------------------------
