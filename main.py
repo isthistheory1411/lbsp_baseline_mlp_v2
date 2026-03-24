@@ -1,16 +1,38 @@
-def execute_training_pipeline_hpc(model, train_loader, val_loader, test_loader,
-                                  optimizer, pos_weight, device,
-                                  num_epochs=50, patience=5,
-                                  save_path=None):
+import os
+import torch
+import joblib
+import argparse
+import numpy as np
+from omegaconf import OmegaConf
+
+from src.dataset import get_protein_dataloader
+from src.model import ResidueMLP
+from src.train import train_model_hpc
+from src.evaluate import evaluate_on_test_hpc, find_optimal_threshold
+from src.main import save_results
+from src.utils import set_seed  
+
+def execute_training_pipeline_hpc(
+    model,
+    train_loader,
+    val_loader,
+    test_loader,
+    optimizer,
+    pos_weight,
+    device,
+    num_epochs=50,
+    patience=5,
+    save_path=None,
+    thresholds=None
+):
     """
     Full HPC-ready training pipeline.
-    save_path: full path to save best model checkpoint
     """
     if save_path is None:
         raise ValueError("You must specify a full path for the model checkpoint (save_path).")
 
     # 1. Train model with early stopping
-    train_loss_history, val_loss_history = train_model_hpc(
+    train_loss_history, val_loss_history, _ = train_model_hpc(
         model, train_loader, val_loader, optimizer, pos_weight, device,
         num_epochs=num_epochs, patience=patience, save_path=save_path
     )
@@ -20,7 +42,8 @@ def execute_training_pipeline_hpc(model, train_loader, val_loader, test_loader,
     model.to(device)
 
     # 3. Find optimal threshold on validation set
-    thresholds = np.arange(0.5, 1.0, 0.1)
+    if thresholds is None:
+        thresholds = np.arange(0.5, 1.0, 0.1)
     optimal_threshold, threshold_results = find_optimal_threshold(
         model, val_loader, device, thresholds=thresholds
     )
@@ -33,26 +56,42 @@ def execute_training_pipeline_hpc(model, train_loader, val_loader, test_loader,
     return test_metrics, optimal_threshold, train_loss_history, val_loss_history, threshold_results
 
 
-def save_results(results, save_path):
-    import joblib
-    import os
-    joblib.dump(results, save_path, compress=3)
-    print(f"Training results saved to {save_path}")
-
-
 if __name__ == "__main__":
-    import pandas as pd
-    from torch.utils.data import DataLoader
-    import torch
-    import joblib
+    # -------------------------------
+    # Command-line arguments
+    # -------------------------------
+    parser = argparse.ArgumentParser(description="Ligand Binding Site Prediction Pipeline")
+    parser.add_argument("--config", type=str, required=True, help="Path to config.yaml")
+    parser.add_argument("--override", nargs="*", default=None,
+                        help="Optional overrides, e.g. training.num_epochs=100")
+    args = parser.parse_args()
 
     # -------------------------------
-    # Paths and data
+    # Load config using OmegaConf
     # -------------------------------
-    h5_path = os.path.expanduser("~/generate_embed/per_residue_embeddings.h5")
-    train_pkl = os.path.expanduser("~/model_dev/ligysis_id30_train_df.pkl")
-    val_pkl = os.path.expanduser("~/model_dev/ligysis_id30_val_df.pkl")
-    test_pkl = os.path.expanduser("~/model_dev/ligysis_id30_test_df.pkl")
+    cfg = OmegaConf.load(os.path.expanduser(args.config))
+    if args.override:
+        for override in args.override:
+            key, value = override.split("=")
+            OmegaConf.update(cfg, key, value)
+
+    # -------------------------------
+    # Set random seed for reproducibility
+    # -------------------------------
+    set_seed(cfg.training.seed)
+
+    # -------------------------------
+    # Paths
+    # -------------------------------
+    train_pkl = os.path.expanduser(cfg.data.train_df)
+    val_pkl = os.path.expanduser(cfg.data.val_df)
+    test_pkl = os.path.expanduser(cfg.data.test_df)
+    h5_path = os.path.expanduser(cfg.data.h5_embeddings)
+    checkpoint_path = os.path.expanduser(cfg.paths.checkpoint)
+    results_path = os.path.expanduser(cfg.paths.results)
+
+    os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
+    os.makedirs(os.path.dirname(results_path), exist_ok=True)
 
     # -------------------------------
     # Load DataFrames
@@ -62,81 +101,68 @@ if __name__ == "__main__":
     test_df = joblib.load(test_pkl)
 
     # -------------------------------
-    # Create datasets
+    # Create DataLoaders using helper
     # -------------------------------
-    train_dataset = ProteinDataset(train_df, h5_path)
-    val_dataset = ProteinDataset(val_df, h5_path)
-    test_dataset = ProteinDataset(test_df, h5_path)
-
-    # -------------------------------
-    # DataLoaders
-    # -------------------------------
-    batch_size = 64
-    num_workers = 0  # start with 0; increase to 4+ when safe with HPC
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=batch_size,
+    train_loader = get_protein_dataloader(
+        train_df, h5_path,
+        batch_size=cfg.training.batch_size,
         shuffle=True,
-        collate_fn=collate_fn,
-        num_workers=num_workers,
-        pin_memory=True
+        max_len=cfg.model.max_len
     )
-
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
+    val_loader = get_protein_dataloader(
+        val_df, h5_path,
+        batch_size=cfg.training.batch_size,
         shuffle=False,
-        collate_fn=collate_fn,
-        num_workers=num_workers,
-        pin_memory=True
+        max_len=cfg.model.max_len
     )
-
-    test_loader = DataLoader(
-        test_dataset,
-        batch_size=batch_size,
+    test_loader = get_protein_dataloader(
+        test_df, h5_path,
+        batch_size=cfg.training.batch_size,
         shuffle=False,
-        collate_fn=collate_fn,
-        num_workers=num_workers,
-        pin_memory=True
+        max_len=cfg.model.max_len
     )
 
     # -------------------------------
-    # Device and model
+    # Device
     # -------------------------------
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    D_res = 1024
-    protein_emb_dim = 256
-    input_dim = D_res + protein_emb_dim + 1  # residue + protein + position
 
+    # -------------------------------
+    # Model
+    # -------------------------------
     model = ResidueMLP(
-        residue_emb_dim=D_res,
-        protein_emb_dim=protein_emb_dim,
-        hidden_dims=[512, 256, 128],
-        dropout=0.1
+        residue_emb_dim=cfg.model.residue_emb_dim,
+        protein_emb_dim=cfg.model.protein_emb_dim,
+        hidden_dims=cfg.model.hidden_dims,
+        dropout=cfg.model.dropout
     )
     model.to(device)
 
     # -------------------------------
     # Optimizer and class imbalance
     # -------------------------------
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-    pos_frac = 1 / 10
-    pos_weight = torch.tensor([(1 - pos_frac) / pos_frac]).to(device)
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=cfg.training.learning_rate,
+        weight_decay=cfg.training.weight_decay
+    )
+    pos_weight = torch.tensor([cfg.training.pos_weight], device=device)
 
     # -------------------------------
-    # Train, find optimal threshold, evaluate
+    # Execute training pipeline
     # -------------------------------
-
-    checkpoint_dir = os.path.dirname(os.path.expanduser("~/model_dev/baseline_mlp/best_model.pt"))
-    os.makedirs(checkpoint_dir, exist_ok=True)
-
     test_metrics, optimal_threshold, train_loss_history, val_loss_history, threshold_results = execute_training_pipeline_hpc(
-        model, train_loader, val_loader, test_loader,
-        optimizer, pos_weight, device,
-        num_epochs=50,
-        patience=5,
-        save_path=os.path.expanduser("~/model_dev/baseline_mlp/best_model.pt")
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        optimizer=optimizer,
+        pos_weight=pos_weight,
+        device=device,
+        num_epochs=cfg.training.num_epochs,
+        patience=cfg.training.patience,
+        save_path=checkpoint_path,
+        thresholds=cfg.get("evaluation", {}).get("thresholds", np.arange(0.5, 1.0, 0.1))
     )
 
     # -------------------------------
@@ -149,9 +175,4 @@ if __name__ == "__main__":
         "val_loss_history": val_loss_history,
         "threshold_results": threshold_results
     }
-
-    results_dir = os.path.expanduser("~/model_dev/baseline_mlp")  # e.g., your HPC scratch space
-    os.makedirs(results_dir, exist_ok=True)  # ensure the folder exists
-    save_path = os.path.join(results_dir, "training_results.joblib")
-
-    save_results(results_to_save, save_path=save_path)
+    save_results(results_to_save, save_path=results_path)
