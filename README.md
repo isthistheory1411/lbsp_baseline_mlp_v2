@@ -96,7 +96,9 @@ model:
 ## Training
 Run the full HPC-ready training pipeline:
 ```
-export PYTHONPATH=$(pwd) python -m src.main --config full/path/to/config/config.yaml
+export PYTHONPATH=$(pwd)
+
+python -m src.main --config full/path/to/config/config.yaml
 ```
 The training pipeline includes:
 
@@ -118,7 +120,9 @@ Before running Inference mode, update `config/inference_config.yaml`:
 
 Run per-residue predictions with optional metrics if labels are available. The full YAML path is recommended:
 ```
-export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
+export PYTHONPATH=$(pwd)
+
+python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
 Tested with:
 - Python 3.12.11
@@ -151,11 +155,15 @@ Use the files in `examples/` to test it out!
 
 1. Train on example dataset:
 ```
-export PYTHONPATH=$(pwd) python -m src.main --config full/path/to/config/config.yaml
+export PYTHONPATH=$(pwd)
+
+python -m src.main --config full/path/to/config/config.yaml
 ```
   Download example per-residue [ProtT5 embeddings](https://drive.google.com/file/d/1t5mn4YDiVk_aVm_2GkjAN8G9AzBy7Mix/view?usp=drive_link)
 
 2. Run Inference on example data:
 ```
-export PYTHONPATH=$(pwd) python -m inference.inference_main --config full/path/to/config/inference_config.yaml
+export PYTHONPATH=$(pwd)
+
+python -m inference.inference_main --config full/path/to/config/inference_config.yaml
 ```
